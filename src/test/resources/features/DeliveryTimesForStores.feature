@@ -1,13 +1,6 @@
-Feature: Bag functionalities
+Feature: Find Stores and Delivery Times
 
-  Scenario: Putting one thing in the bag
-    Given the bag is empty
-    When I put 1 potato in the bag
-    Then the bag should contain only 1 potato
-
-  Scenario: Putting few things in the bag
-    Given the bag is empty
-    When I put 1 potato in the bag
-    And I put 2 cucumber in the bag
-    Then the bag should contain 1 potato
-    And the bag should contain 2 cucumber
+  Scenario: Get the delivery times for all the stores
+    Given the user is on Instacart home page
+    When the user clicks on Show all button
+    Then the delivery times should be displayed for all the stores
