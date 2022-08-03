@@ -1,12 +1,14 @@
-package io.tpd.springbootcucumber.bagbasics;
+package com.instacart.springbootcucumber.stepdefinitions;
 
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.tpd.springbootcucumber.bagcommons.BagHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
+import com.instacart.springbootcucumber.pages.StoresAndDeliveryTimesPage;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,39 +16,23 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BagCucumberStepDefinitions {
+public class StoresAndDelTimesStepDefinitions {
 
-    private final Logger log = LoggerFactory.getLogger(BagCucumberStepDefinitions.class);
+	StoresAndDeliveryTimesPage storesAndDelTimes = new StoresAndDeliveryTimesPage();
+	
+	@Given("^the user is on Instacart home page$")
+	public void the_user_is_on_instacart_home_page() throws Throwable {
+		storesAndDelTimes.verifyHome();
+	}
 
-    @Autowired
-    private BagHttpClient bagHttpClient;
+	@When("^the user clicks on Show all button$")
+	public void the_user_clicks_on_show_all_button() throws Throwable {
+		storesAndDelTimes.clickShowAll();
+	}
 
-    @When("^I put (\\d+) (\\w+) in the bag$")
-    public void i_put_something_in_the_bag(final int quantity, final String something) {
-        IntStream.range(0, quantity)
-                .peek(n -> log.info("Putting a {} in the bag, number {}", something, quantity))
-                .map(ignore -> bagHttpClient.put(something))
-                .forEach(statusCode -> assertThat(statusCode).isEqualTo(HttpStatus.CREATED.value()));
-    }
-
-    @Then("^the bag should contain only (\\d+) (\\w+)$")
-    public void the_bag_should_contain_only_something(final int quantity, final String something) {
-        assertNumberOfTimes(quantity, something, true);
-    }
-
-    @Then("^the bag should contain (\\d+) (\\w+)$")
-    public void the_bag_should_contain_something(final int quantity, final String something) {
-        assertNumberOfTimes(quantity, something, false);
-    }
-
-    private void assertNumberOfTimes(final int quantity, final String something, final boolean onlyThat) {
-        final List<String> things = bagHttpClient.getContents().getThings();
-        log.info("Expecting {} times {}. The bag contains {}", quantity, something, things);
-        final int timesInList = Collections.frequency(things, something);
-        assertThat(timesInList).isEqualTo(quantity);
-        if (onlyThat) {
-            assertThat(timesInList).isEqualTo(things.size());
-        }
-    }
+	@Then("^the delivery times should be displayed for all the stores$")
+	public void the_delivery_times_should_be_displayed_for_all_the_stores() throws Throwable {
+		storesAndDelTimes.getStoreNamesAndDeliveryTimes();
+	}
 
 }
